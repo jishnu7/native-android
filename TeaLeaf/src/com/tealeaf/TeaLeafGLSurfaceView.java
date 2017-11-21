@@ -15,6 +15,7 @@
 package com.tealeaf;
 
 import java.nio.IntBuffer;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -108,11 +109,15 @@ public class TeaLeafGLSurfaceView extends com.tealeaf.GLSurfaceView {
 		// };
 		// orientationListener.enable();
 
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			final ActivityManager activityManager = (ActivityManager) TeaLeaf.get().getSystemService(Context.ACTIVITY_SERVICE);
-			ActivityManager.RunningAppProcessInfo currentState = activityManager.getRunningAppProcesses().get(0);
-			ActivityManager.getMyMemoryState(currentState);
-			onMemoryWarning(currentState.lastTrimLevel);
+			List<ActivityManager.RunningAppProcessInfo> processes = activityManager.getRunningAppProcesses();
+			if (processes != null) {
+				ActivityManager.RunningAppProcessInfo currentState = processes.get(0);
+				ActivityManager.getMyMemoryState(currentState);
+				onMemoryWarning(currentState.lastTrimLevel);
+			}
 		}
 	}
 
