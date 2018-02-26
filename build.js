@@ -44,7 +44,7 @@ var existsAsync = function (filename) {
 // used to remove punctuation (if any) from the appid
 var PUNCTUATION_REGEX = /[!"#$%&'()*+,\-.\/:;<=>?@\[\\\]^_`{|}~]/g;
 
-var ANDROID_TARGET = "android-25";
+var ANDROID_TARGET = "android-27";
 var androidVersion = require('./package.json').version;
 
 var logger;
@@ -821,7 +821,7 @@ function updateManifest(api, app, config, opts) {
     sdkHash: config.sdkVersion,
     androidHash: androidVersion,
     minSdkVersion: config.argv['min-sdk-version'] || 14,
-    targetSdkVersion: config.argv['target-sdk-version'] || 25,
+    targetSdkVersion: config.argv['target-sdk-version'] || 27,
     debuggable: config.debug ? 'true' : 'false',
     otherApps: otherApps.join('|')
   });
