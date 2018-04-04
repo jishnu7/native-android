@@ -106,6 +106,13 @@ void report_gl_error(int code, gl_error **errors_hash, bool unrecoverable) {
     jmethodID method = shim->env->GetMethodID(shim->type, "reportGlError", "(I)[I");
     jint error = code;
     jintArray gl_errors_arr = (jintArray)shim->env->CallObjectMethod(shim->instance, method, error);
+
+    if (shim->env->ExceptionCheck()) {
+        shim->env->ExceptionDescribe();
+        shim->env->ExceptionClear();
+        return;
+    }
+
     int length = (int)shim->env->GetArrayLength(gl_errors_arr);
     int *error_arr = (int*)shim->env->GetIntArrayElements(gl_errors_arr, 0);
     for (int i = 0; i < length; i++) {
