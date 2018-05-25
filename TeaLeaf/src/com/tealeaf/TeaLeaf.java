@@ -255,6 +255,7 @@ public class TeaLeaf extends FragmentActivity {
 		//check intent for test app info
 		Bundle bundle = intent.getExtras();
 		boolean isTestApp = false;
+		boolean notched_device = isNotchedDevice();
 		if (bundle != null) {
 		   isTestApp = bundle.getBoolean("isTestApp", false);
 
@@ -303,18 +304,25 @@ public class TeaLeaf extends FragmentActivity {
 
 		// default screen dimensions
 		Display display = getWindow().getWindowManager().getDefaultDisplay();
+		Point screenSize = new Point();
 		int width = display.getWidth();
 		int height = display.getHeight();
 		int orientation = getRequestedOrientation();
 
 		// gets real screen dimensions without nav bars on recent API versions
-		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			Point screenSize = new Point();
+		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !notched_device) {
 			try {
 				display.getRealSize(screenSize);
 				width = screenSize.x;
 				height = screenSize.y;
 			} catch (NoSuchMethodError e) {}
+		} else if (notched_device) {
+			try {
+				display.getSize(screenSize);
+				width = screenSize.x;
+				height = screenSize.y;
+			} catch (NoSuchMethodError e) {
+			}
 		}
 
 		// flip width and height based on orientation
@@ -360,6 +368,29 @@ public class TeaLeaf extends FragmentActivity {
 				}
 			}
 		});
+	}
+
+	private boolean isNotchedDevice() {
+		String[] notched_models = { "ANE-AL00", "ANE-L21", "ANE-TL00", "ANE-LX1", "ANE-LX2", "ANE-LX2J", "ANE-LX3", //Huawei nova 3e
+				"CLT-L04", "CLT-L09", "CLT-L29", // Huawei P20 Pro
+				"EML-L09", "EML-L22", "EML-L29", // Huawei P20
+				"ANE-L02", "ANE-L02K", "ANE-L03", "ANE-L12JPZ", "ANE-L21", "ANE-L22", "ANE-L23", // Huawei P20 Lite
+				"ZE620KL", // Asus ZenFone 5
+				"COL-AL00", "COL-AL10", "COL-TL00", "COL-TL10", // Huawei Honor 10
+				"R15 Pro", "PAAM00", // Oppo R15 Pro
+				"R15", // Oppo R15
+				"CPH1819", // Oppo F7
+				"V9", // Vivo v9
+				"V9 Youth", // Vivo v9 Youth
+				"X21", "X21 UD",  // Vivo X21 and X21 UD
+				"A6000", "A6003", // One Plus 6
+				"LM-G710", "G710" }; // LG G7 ThinQ
+
+		List<String> notched_list = Arrays.asList(notched_models);
+		if (notched_list.contains(Build.MODEL)) {
+			return true;
+		}
+		return false;
 	}
 
 	public Bitmap getBitmapFromView(EditText view) {
