@@ -255,6 +255,7 @@ public class TeaLeaf extends FragmentActivity {
 		//check intent for test app info
 		Bundle bundle = intent.getExtras();
 		boolean isTestApp = false;
+		boolean notched_device = isNotchedDevice();
 		if (bundle != null) {
 		   isTestApp = bundle.getBoolean("isTestApp", false);
 
@@ -303,18 +304,26 @@ public class TeaLeaf extends FragmentActivity {
 
 		// default screen dimensions
 		Display display = getWindow().getWindowManager().getDefaultDisplay();
+		Point screenSize = new Point();
 		int width = display.getWidth();
 		int height = display.getHeight();
 		int orientation = getRequestedOrientation();
 
 		// gets real screen dimensions without nav bars on recent API versions
-		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !isNotchedDevice()) {
-			Point screenSize = new Point();
+		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !notched_device) {
 			try {
 				display.getRealSize(screenSize);
 				width = screenSize.x;
 				height = screenSize.y;
 			} catch (NoSuchMethodError e) {}
+		} else if (notched_device) {
+			Point screenSize = new Point();
+			try {
+				display.getSize(screenSize);
+				width = screenSize.x;
+				height = screenSize.y;
+			} catch (NoSuchMethodError e) {
+			}
 		}
 
 		// flip width and height based on orientation
