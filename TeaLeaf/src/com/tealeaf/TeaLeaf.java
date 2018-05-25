@@ -308,7 +308,7 @@ public class TeaLeaf extends FragmentActivity {
 		int orientation = getRequestedOrientation();
 
 		// gets real screen dimensions without nav bars on recent API versions
-		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !isNotchedDevice()) {
 			Point screenSize = new Point();
 			try {
 				display.getRealSize(screenSize);
@@ -360,6 +360,23 @@ public class TeaLeaf extends FragmentActivity {
 				}
 			}
 		});
+	}
+
+	private boolean isNotchedDevice() {
+		String[] notched_models = { "ANE-AL00", "ANE-L21", "ANE-TL00", "ANE-LX1", "ANE-LX2", "ANE-LX2J", "ANE-LX3",
+				"CLT-L04", "CLT-L09", "CLT-L29", "EML-L09", "EML-L22", "EML-L29", "ANE-L02", "ANE-L02K", "ANE-L03",
+				"ANE-L12JPZ", "ANE-L21", "ANE-L22", "ANE-L23", "ZE620KL", "ZS620KL", "COL-AL00", "COL-AL10", "COL-TL00",
+				"COL-TL10", "R15 Pro", "PAAM00", "R15", "CPH1819", "V9", "X21", "X21 UD", "A6000", "A6003", "LM-G710",
+				"G710" };
+
+		boolean notched_device = false;
+
+		for (String notched_model : notched_models) {
+			if (Build.MODEL.equals(notched_model)) {
+				notched_device = true;
+			}
+		}
+		return notched_device;
 	}
 
 	public Bitmap getBitmapFromView(EditText view) {
