@@ -317,7 +317,6 @@ public class TeaLeaf extends FragmentActivity {
 				height = screenSize.y;
 			} catch (NoSuchMethodError e) {}
 		} else if (notched_device) {
-			Point screenSize = new Point();
 			try {
 				display.getSize(screenSize);
 				width = screenSize.x;
