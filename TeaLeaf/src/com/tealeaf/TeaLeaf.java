@@ -386,14 +386,11 @@ public class TeaLeaf extends FragmentActivity {
 				"A6000", "A6003", // One Plus 6
 				"LM-G710", "G710" }; // LG G7 ThinQ
 
-		boolean notched_device = false;
-
-		for (String notched_model : notched_models) {
-			if (Build.MODEL.equals(notched_model)) {
-				notched_device = true;
-			}
+		List<String> notched_list = Arrays.asList(notched_models);
+		if (notched_list.contains(Build.MODEL)) {
+			return true;
 		}
-		return notched_device;
+		return false;
 	}
 
 	public Bitmap getBitmapFromView(EditText view) {
