@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.util.List;
+import java.util.Arrays;
 import android.content.pm.ActivityInfo;
 import com.tealeaf.ActivityState;
 import com.tealeaf.event.BackButtonEvent;
