@@ -278,6 +278,8 @@ public class TeaLeaf extends FragmentActivity {
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 		group = new FrameLayout(this);
+		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		group.setLayoutParams(params);
 		setContentView(group);
 
 		// TextEditViewHandler setup
@@ -336,10 +338,16 @@ public class TeaLeaf extends FragmentActivity {
 		}
 
 		final AbsoluteLayout absLayout = new AbsoluteLayout(this);
-		absLayout.setLayoutParams(new android.view.ViewGroup.LayoutParams(width, height));
-		absLayout.addView(glView, new android.view.ViewGroup.LayoutParams(width, height));
-
+		absLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		absLayout.addView(glView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		group.addView(absLayout);
+		if (isFullScreen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		int uiFlag = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+		  getWindow().getDecorView().setSystemUiVisibility(uiFlag);
+		}
 		editText = EditTextView.Init(this);
 
 		if (isTestApp) {
