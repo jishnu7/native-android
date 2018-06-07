@@ -380,6 +380,7 @@ public class TeaLeaf extends FragmentActivity {
 				"COL-AL00", "COL-AL10", "COL-TL00", "COL-TL10", // Huawei Honor 10
 				"R15 Pro", "PAAM00", // Oppo R15 Pro
 				"R15", // Oppo R15
+				"PH-1", "mata",// Essential PH-1
 				"CPH1819", // Oppo F7
 				"V9", // Vivo v9
 				"V9 Youth", // Vivo v9 Youth
