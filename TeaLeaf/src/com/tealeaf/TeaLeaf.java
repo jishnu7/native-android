@@ -304,13 +304,7 @@ public class TeaLeaf extends FragmentActivity {
 		glView = new TeaLeafGLSurfaceView(this);
 		glViewPaused = false;
 
-		// default screen dimensions
-		Display display = getWindow().getWindowManager().getDefaultDisplay();
-		Point screenSize = new Point();
-		int width = display.getWidth();
-		int height = display.getHeight();
-		int orientation = getRequestedOrientation();
-
+		// might cause issue in landscape mode as not taking orientation changes 
 		final AbsoluteLayout absLayout = new AbsoluteLayout(this);
 		absLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		absLayout.addView(glView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
