@@ -479,6 +479,12 @@ public class TeaLeaf extends FragmentActivity {
 		}
 	}
 
+	private class DispatcheventsAsync extends AsyncTask<String, Integer, String> {
+		protected String doInBackground(String... params) {
+			NativeShim.dispatchEvents(params);
+			return null;
+		}		
+	}
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
@@ -507,9 +513,7 @@ public class TeaLeaf extends FragmentActivity {
 				//always send lost focus event
 				String[] events = {new WindowFocusLostEvent().pack()};
 
-				// DANGER: Calling dispatchEvents() is NOT thread-safe.
-				// Doing it here because the GLThread is paused.
-				NativeShim.dispatchEvents(events);
+				new DispatcheventsAsync().execute(events);
 			}
 		}
 	}
@@ -549,9 +553,7 @@ public class TeaLeaf extends FragmentActivity {
 					if (jsRunning) {
 						String[] events = {new PauseEvent().pack()};
 
-						// DANGER: Calling dispatchEvents() is NOT thread-safe.
-						// Doing it here because the GLThread is paused.
-						NativeShim.dispatchEvents(events);
+						new DispatcheventsAsync().execute(events);
 					}
 					glView.setRendererStateReloading();
 				}
