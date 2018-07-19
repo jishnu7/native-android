@@ -501,7 +501,12 @@ public class TeaLeaf extends FragmentActivity {
 			/* Fix Crash in Android 7.0 Samsung devices where screenOffReceiver is null
 			TODO: Need to find why it is null */
 			if (screenOffReceiver != null) {
-				unregisterReceiver(screenOffReceiver);
+				try {
+					unregisterReceiver(screenOffReceiver);
+				} catch (Exception e) {
+					logger.log("{focus} Unable to unregister screenOffReciever");
+					e.printStackTrace();
+				}
 			}
 			if (jsRunning) {
 				//always send lost focus event
