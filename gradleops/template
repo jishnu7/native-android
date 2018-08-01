@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+echo "Checking environment variables..."
+if set|grep '^ANDROID_HOME=' >/dev/null;then
+    echo "ANDROID_HOME variable exists"
+else
+    echo "ANDROID_HOME environment variable does not exist"
+    echo "Stopping ..."
+  	exit 1
+fi
+
+#Check Java 1.8
+echo "Checking Java 1.8 ..."
+
+
+
+#Mac
+if [ $(./ostype.sh) == "osx" ]; then
+	export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+
+else
+#Linux
+	export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
+fi
+
+CURJAVA=$(java -version 2>&1 >/dev/null | grep 'java version' | awk '{print $3}')
+if [[ $CURJAVA == *"1.8."* ]] ; then
+	echo "Using Java 1.8"
+else
+     echo "Java 1.8 not found, please install Java 1.8 or update Java 1.8 to latest"
+ 	 echo "Stopping ..."
+  	 exit 1
+fi
+
+echo "Start preparing android project ..."
+export LC_ALL=C
+set -ex
+new="$1"
+shift
+if [ $# -gt 0 ]; then
+  old="$1"
+  shift
+else
+  old='Min'
+fi
+old="$(echo "$old" | sed -E 's/\/$//')"
+new="$(echo "$new" | sed -E 's/\/$//')"
+new_lower="$(echo "$new" | tr 'A-Z' 'a-z')"
+old_lower="$(echo "$old" | tr 'A-Z' 'a-z')"
+cd "../../../../../build/""$new"
+echo "pwd "$PWD
+
+#Changing packages
+package_old="com.$old_lower"
+package_new="$1"
+
+#Changing names
+#Mac
+if [ $(../../modules/devkit-core/modules/native-android/gradleops/ostype.sh) == "osx" ]; then
+	find . -type f -print0 | xargs -0 sed -i "" "s/${package_old}/${package_new}/g"
+	find . -type f -print0 | xargs -0 sed -i "" "s/${old}/${new}/g"
+	find . -type f -print0 | xargs -0 sed -i "" "s/${old_lower}/${new_lower}/g"
+else
+#Linux
+	find ./ -type f -print0 | xargs -0 sed -i  "s/${package_old}/${package_new}/g"
+    find ./ -type f -print0 | xargs -0 sed -i "s/${old}/${new}/g"
+    find ./ -type f -print0 | xargs -0 sed -i "s/${old_lower}/${new_lower}/g"
+fi
+pwd
+cd app/src/main/java/com
+mv "$old_lower" "$new_lower"
+

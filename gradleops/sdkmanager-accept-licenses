@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#Define colors
+RED='\033[0;31m'
+NC='\033[0m'
+
+#check if expect is installed
+if [[ $(which expect) ]]; then
+    echo "expect found"
+else
+    echo -e "${RED}expect not installed, please install expect and try again${NC}"
+    echo -e "${RED}Stopping ...${NC}"
+    exit 1
+fi
+
+
+/usr/bin/expect -c '
+set timeout -1;
+spawn '"${ANDROID_HOME}"'/tools/bin/sdkmanager --licenses;
+  expect {
+    "y/N" { exp_send "y\r" ; exp_continue }
+    eof
+  }
+'

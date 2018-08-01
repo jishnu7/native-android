@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">TeaLeaf</string>
+    <string name="game_name">AndroidSeed</string>
+    <string name="app_name">@string/game_name</string>
+    <!--START_FIREBASE_STRINGS-->
+    <!--END_FIREBASE_STRINGS-->
+</resources>

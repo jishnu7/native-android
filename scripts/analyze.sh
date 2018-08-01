@@ -14,9 +14,3 @@ elif [[ $UNAME == 'Linux' ]]; then
 	NUM_CPUS=`grep -c ^processor /proc/cpuinfo`
 fi
 
-cd "$DIR/../TeaLeaf" >/dev/null
-$NDK_BUILD clean
-$NDK_BUILD -j$NUM_CPUS ANALYZE=1
-STATUS=$?
-cd - >/dev/null
-exit $STATUS

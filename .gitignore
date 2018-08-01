@@ -8,13 +8,19 @@ tags
 .classpath
 .project
 local.properties
-
+.gradleops/AndroidSeed/idea
+.gradleops/AndroidSeed/idea/gradle.xml
+.gradleops/AndroidSeed/idea/dictionaries		  	  
+.gradleops/AndroidSeed/idea/libraries
+ +.idea/misc.xml
 # build directories
 bin
 gen
-obj
-armeabi
-armeabi-v7a
+
+#Removed for now
+#obj
+#armeabi
+#armeabi-v7a
 node_modules
 
 # application files
@@ -38,11 +44,15 @@ build.xml
 proguard-project.txt
 
 #plugins
-TeaLeaf/src/com/tealeaf/plugin/plugins
+# was before TeaLeaf/src/com/tealeaf/plugin/plugins
+gradleops/AndroidSeed/tealeaf/plugin/plugins
 plugins/config.json
 
 #manifest
 manifest.json
 
 # generated symlinks (checkSymlinks)
-TeaLeaf/jni/core
+gradleops/AndroidSeed/tealeaf/src/main/jni/core
+gradleops/AndroidSeed/tealeaf/src/main/libs
+gradleops/AndroidSeed/tealeaf/src/main/obj
+!gradleops/AndroidSeed/tealeaf/src/main/jni/gen

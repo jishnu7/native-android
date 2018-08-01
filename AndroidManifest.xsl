@@ -3,11 +3,11 @@
 	<xsl:param name="package" />
 	<xsl:param name="title" />
 	<xsl:param name="activity" />
-	<xsl:param name="version" />
-	<xsl:param name="versionCode" />
+	<xsl:param name="version">23</xsl:param>
+	<xsl:param name="versionCode">23</xsl:param>
 
-	<xsl:param name="minSdkVersion">8</xsl:param>
-	<xsl:param name="targetSdkVersion">14</xsl:param>
+	<xsl:param name="minSdkVersion">21</xsl:param>
+	<xsl:param name="targetSdkVersion">27</xsl:param>
 
 	<xsl:param name="gameHash">0.0</xsl:param>
 	<xsl:param name="sdkHash">1.0</xsl:param>
@@ -16,11 +16,7 @@
 	<xsl:param name="appid"></xsl:param>
 	<xsl:param name="fullscreen">true</xsl:param>
 	<xsl:param name="shortname">tealeaf</xsl:param>
-	<xsl:param name="studioName">Wee Cat Studios</xsl:param>
-	<xsl:param name="codeHost">s.wee.cat</xsl:param>
-	<xsl:param name="tcpHost">s.wee.cat</xsl:param>
-	<xsl:param name="codePort">80</xsl:param>
-	<xsl:param name="tcpPort">4747</xsl:param>
+	<xsl:param name="studioName">Hashcube</xsl:param>
 	<xsl:param name="entryPoint">gc.native.launchClient</xsl:param>
 	<xsl:param name="pushUrl">http://staging.api.gameclosure.com/push/%s/?device=%s&amp;version=%s</xsl:param>
 	<xsl:param name="servicesUrl">http://api.gameclosure.com</xsl:param>
@@ -110,23 +106,11 @@
 	<xsl:template match="meta-data[@android:name='studioName']">
 		<meta-data android:name="studioName" android:value="{$studioName}"/>
 	</xsl:template>
-	<xsl:template match="meta-data[@android:name='codeHost']">
-		<meta-data android:name="codeHost" android:value="{$codeHost}"/>
-	</xsl:template>
-	<xsl:template match="meta-data[@android:name='tcpHost']">
-		<meta-data android:name="tcpHost" android:value="{$tcpHost}"/>
-	</xsl:template>
 	<xsl:template match="meta-data[@android:name='pushUrl']">
 		<meta-data android:name="pushUrl" android:value="{$pushUrl}"/>
 	</xsl:template>
 	<xsl:template match="meta-data[@android:name='contactsUrl']">
 		<meta-data android:name="contactsUrl" android:value="{$contactsUrl}"/>
-	</xsl:template>
-	<xsl:template match="meta-data[@android:name='codePort']">
-		<meta-data android:name="codePort" android:value="{$codePort}"/>
-	</xsl:template>
-	<xsl:template match="meta-data[@android:name='tcpPort']">
-		<meta-data android:name="tcpPort" android:value="{$tcpPort}"/>
 	</xsl:template>
 	<xsl:template match="meta-data[@android:name='entryPoint']">
 		<meta-data android:name="entryPoint" android:value="{$entryPoint}"/>

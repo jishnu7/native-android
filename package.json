@@ -15,7 +15,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/gameclosure/native-android.git"
+    "url": "https://github.com/hashcube/native-android.git"
   },
   "channel": "release"
 }

@@ -1,0 +1,79 @@
+//<!--START_PLUGINS_PATCH-->
+//<!--END_PLUGINS_PATCH-->
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 27
+        multiDexEnabled true
+        ndk {
+            moduleName "libpng"
+        }
+        versionCode 1
+        versionName "1.0"
+        lintOptions {
+            disable 'LongLogTag'
+            abortOnError false
+        }
+        
+    //<!--START_MANIFEST_PLACEHOLDERS-->
+    //<!--END_MANIFEST_PLACEHOLDERS-->
+        
+    }
+
+   useLibrary 'org.apache.http.legacy'
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    sourceSets {
+        main {
+            jni.srcDirs = ['src/main/jni']
+            jniLibs.srcDirs = ['src/main/jni/lib', "src/main/libs", 'src/main/jni/libs']
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Application.mk'
+        }
+    }
+    productFlavors {
+    }
+
+    allprojects {
+        repositories {
+            jcenter()
+            maven { url 'https://maven.google.com' }
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.2.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+
+    //<!--START_PLUGINS_BULK_DEPENDENCIES-->
+    //<!--END_PLUGINS_BULK_DEPENDENCIES-->
+
+
+
+
+    //<!--START_PLUGINS_DEPENDENCIES-->
+    //<!--END_PLUGINS_DEPENDENCIES-->
+
+}
+
+    //<!--START_ANDROID_PLUGINS-->
+    //<!--END_ANDROID_PLUGINS-->
+
+    //<!--START_ANDROID_PLUGINS_CUSTOM_SETTINGS-->
+    //<!--END_ANDROID_PLUGINS_CUSTOM_SETTINGS-->

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:amazon="http://schemas.amazon.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+
+
+	package="com.tealeaf">
+	<uses-sdk android:targetSdkVersion="27" />
+
+	<supports-screens android:resizeable="true" android:smallScreens="true" android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" />
+
+	<uses-feature android:glEsVersion="0x00020000"/>
+
+</manifest>

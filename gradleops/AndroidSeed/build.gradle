@@ -1,0 +1,38 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+        maven { url 'https://plugins.gradle.org/m2/'}
+        //<!--START_BUILDSCRIPT_REPOS-->
+        //<!--END_BUILDSCRIPT_REPOS-->
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.0-alpha12'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+        
+    //<!--START_GOOGLE_PLAY_PLUGINS_CLASSPATH-->
+
+
+    //<!--END_GOOGLE_PLAY_PLUGINS_CLASSPATH-->
+
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+        //<!--START_PLUGINS_REPOSITORIES-->
+        //<!--END_PLUGINS_REPOSITORIES-->
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

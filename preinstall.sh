@@ -22,3 +22,4 @@ fi
 
 git submodule update --init --recursive
 
+cp -r native-core gradleops/AndroidSeed/tealeaf/src/main/jni/core
