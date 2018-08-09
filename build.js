@@ -689,6 +689,38 @@ function transformXSL(api, inFile, outFile, xslFile, params, config) {
     });
 }
 
+function transformGradle(app, inFilePath, outFilePath, transformFilePath, config) {
+
+  var readTransformFilePath = fs.readFileAsync(transformFilePath, 'utf-8');
+  var readInFilePath = fs.readFileAsync(inFilePath, 'utf-8');
+
+  return Promise.all([
+    readTransformFilePath, readInFilePath
+  ]).spread(function (transformFileContents, inFileContents) {
+    //key are considered as placeholders in gradle transform files
+    var transformFileConfig = JSON.parse(transformFileContents)
+
+    // read parameters in module config json object in manifest.json file
+    for (var key in transformFileConfig) {
+      logger.warn(key);
+      logger.warn(app.manifest.android[transformFileConfig[key]])
+      if(app.manifest.android[transformFileConfig[key]]) {
+        inFileContents = inFileContents.replace(key, JSON.stringify(app.manifest.android[transformFileConfig[key]]));
+      }
+    }
+    // read parameters in android config json object in manifest.json file
+    for (var key in transformFileConfig) {
+      logger.warn(key);
+      logger.warn(config[transformFileConfig[key]])
+      if(config[transformFileConfig[key]]) {
+        inFileContents = inFileContents.replace(key, JSON.stringify(config[transformFileConfig[key]]));
+      }
+    }
+
+    return fs.writeFile(outFilePath, inFileContents, 'utf-8');
+  });
+}
+
 function saveLocalizedStringsXmls(outputPath, titles) {
   var stringsXmlPath = path.join(outputPath, "app/src/main", "res/values/strings.xml");
   var stringsXml = fs.readFileSync(stringsXmlPath, "utf-8");
@@ -792,10 +824,10 @@ function makeAndroidProject(api, app, config, opts) {
     .all()// Clean gradle projects
     .then(
       function () {
-      return setGradleParameters(app).then(spawnWithLogger(api, './gradlew', [
-        "clean"
-      ], {cwd: projectPath})
-    )})
+        return setGradleParameters(app).then(spawnWithLogger(api, './gradlew', [
+            "clean"
+          ], {cwd: projectPath})
+        )})
 }
 
 function signAPK(api, app, shortName, outputPath, debug, config) {
@@ -1121,7 +1153,12 @@ function updateManifest(api, app, config, opts) {
   });
 
   var defaultManifest = path.join(projectPath+"/app/src/main", "AndroidManifest.xml");
+  var defaultGradleApp = path.join(projectPath+"/app/", "build.gradle");
+  var defaultGradleTealeaf = path.join(projectPath+"/tealeaf/", "build.gradle");
   var outputManifest =  defaultManifest;
+  var outputGradleApp =  defaultGradleApp;
+  var outputGradleTealeaf =  defaultGradleTealeaf;
+
   injectAppLinks(app.manifest.android)
 
     .then(function () {
@@ -1133,6 +1170,16 @@ function updateManifest(api, app, config, opts) {
     .map(function (moduleName) {
       var module = opts.moduleConfig[moduleName];
       var config = module.config;
+      if (config.transformGradleApp) {
+        var transformFilePath = path.join(module.path, 'android', config.transformGradleApp);
+        transformGradle(app, defaultGradleApp, outputGradleApp, transformFilePath, config);
+      }
+
+      if (config.transformGradleTealeaf) {
+        var transformFilePath = path.join(module.path, 'android', config.transformGradleTealeaf);
+        transformGradle(app, defaultGradleTealeaf, outputGradleTealeaf, transformFilePath, config);
+      }
+
       if (config.injectionXSL) {
         var xslPath = path.join(module.path, 'android', config.injectionXSL);
         return transformXSL(api, defaultManifest, outputManifest, xslPath, params, config);
@@ -1163,20 +1210,20 @@ function setGradleParameters(app) {
     var gradleAppFile = path.join(projectPath,
       "app", "build.gradle");
     return fs.readFileAsync(gradleAppFile, 'utf-8')
-    .then(function (contents) {
+      .then(function (contents) {
 
-      var versionCode = app.manifest.android.versionCode ? app.manifest.android.versionCode : "1"
-      var versionName = app.manifest.version ? app.manifest.version : "1.0"
+        var versionCode = app.manifest.android.versionCode ? app.manifest.android.versionCode : "1"
+        var versionName = app.manifest.version ? app.manifest.version : "1.0"
 
-      contents = contents
-        .replace(/versionCode 1/g, "versionCode " + versionCode)
-        .replace(/versionName "1.0"/g, "versionName  \"" + versionName + "\"")
-        .replace(/GameNamePlaceholderRelease/g, app.manifest.title)
-        .replace(/GameNamePlaceholderDebug/g, app.manifest.title + " debug")
-        .replace(/BuildToolVersionlaceholder/g, app.manifest.android.buildToolsVersion);
-      return fs.writeFileAsync(gradleAppFile, contents);
-    });
-}
+        contents = contents
+          .replace(/versionCode 1/g, "versionCode " + versionCode)
+          .replace(/versionName "1.0"/g, "versionName  \"" + versionName + "\"")
+          .replace(/GameNamePlaceholderRelease/g, app.manifest.title)
+          .replace(/GameNamePlaceholderDebug/g, app.manifest.title + " debug")
+          .replace(/BuildToolVersionlaceholder/g, app.manifest.android.buildToolsVersion);
+        return fs.writeFileAsync(gradleAppFile, contents);
+      });
+  }
 
   var writeTealeafGradle = function() {
     var gradleTeleafFile = path.join(projectPath,
