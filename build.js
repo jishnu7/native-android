@@ -627,7 +627,6 @@ function installJarsDependencies() {
       gradleJarDependencyStr = getTextBetween(gradleBuildFileData, XML_START_PLUGINS_BULK_DEPENDENCIES, XML_END_PLUGINS_BULK_DEPENDENCIES);
 
       var libsDir = path.join(projectPath,"tealeaf",  'libs');
-      var fsNotExtra = require('fs');
       if(fs.existsSync(libsDir)) {
         var files = fs.readdirSync(libsDir);
         files.forEach(function (jar) {
@@ -783,47 +782,55 @@ function makeAndroidProject(api, app, config, opts) {
     })
     // call gradle project to copy seed
     .then(function () {
-      return spawnWithLogger(api, 'bash', [
-        // script path which copies gradle seed project to new named project
-        "./template",
-        // new name and location
-        app.manifest.shortName,
-        // template name and location
-        "AndroidSeed",
-        // new package
-        config.packageName
-      ], {cwd: './modules/devkit-core/modules/native-android/gradleops/'})
+      // checking if android project is already created and has fixed dirs to app.manifest.shortName, so skip template script in that case
+      var pathToCheck = path.join(projectPath, "app/src/main/java", config.packageName.split('.').join('/'));
+      if(!fs.existsSync(pathToCheck)) {
+        return spawnWithLogger(api, 'bash', [
+          // script path which copies gradle seed project to new named project
+          "./template",
+          // new name and location
+          app.manifest.shortName,
+          // template name and location
+          "AndroidSeed",
+          // new package
+          config.packageName
+        ], {cwd: './modules/devkit-core/modules/native-android/gradleops/'})
+
+        // make new package dir
+          .then(function () {
+            return spawnWithLogger(api, 'mkdir', ["-p", path.join(projectPath,
+              "app/src/main/java",
+              config.packageName.split('.').join('/'))]);
+          })
+          // Rename activity
+          .then(function () {
+            var activityFileOld = path.join(projectPath,
+              "app/src/main/java",
+              "com", app.manifest.shortName,
+              "AndroidSeedActivity" + ".java");
+            var activityFileNew = path.join(projectPath,
+              "app/src/main/java",
+              config.packageName.split('.').join('/'),
+              app.manifest.shortName + "Activity.java");
+            return spawnWithLogger(api, 'mv', [activityFileOld,activityFileNew]);
+          })
+          .then(function () {
+            return Promise.all([
+              saveLocalizedStringsXmls(projectPath, config.titles),
+              updateManifest(api, app, config, opts),
+              updateActivity(app, config),
+              executeOnCreate(api, app, config, opts)
+            ]);
+          })
+          .all()
+      }
+      else {
+        return Promise.resolve();
+      }
     })
-    // make new package dir
-    .then(function () {
-      return spawnWithLogger(api, 'mkdir', ["-p", path.join(projectPath,
-        "app/src/main/java",
-        config.packageName.split('.').join('/'))]);
-    })
-    // Rename activity
-    .then(function () {
-      var activityFileOld = path.join(projectPath,
-        "app/src/main/java",
-        "com", app.manifest.shortName,
-        "AndroidSeedActivity" + ".java");
-      var activityFileNew = path.join(projectPath,
-        "app/src/main/java",
-        config.packageName.split('.').join('/'),
-        app.manifest.shortName + "Activity.java");
-      return spawnWithLogger(api, 'mv', [activityFileOld,activityFileNew]);
-    })
-    .then(function () {
-      var dexDir = '\nout.dexed.absolute.dir=../.dex/\nsource.dir=src\n';
-      return Promise.all([
-        saveLocalizedStringsXmls(projectPath, config.titles),
-        updateManifest(api, app, config, opts),
-        updateActivity(app, config),
-        executeOnCreate(api, app, config, opts)
-      ]);
-    })
-    .all()// Clean gradle projects
     .then(
       function () {
+        // Clean gradle projects
         return setGradleParameters(app).then(spawnWithLogger(api, './gradlew', [
             "clean"
           ], {cwd: projectPath})

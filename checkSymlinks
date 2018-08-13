@@ -14,6 +14,10 @@ exports.check = function (cb) {
 	var cwd = process.cwd();
 	process.chdir(__dirname);
 	var links = require('./links.json');
+	
+	// Linking to newly created project, the name should be changed
+	links[0][1] = links[0][1].replace('AndroidSeed', process.argv[2]);
+	
 	var i = 0;
 	var nextLink = function () {
 		var link = links[i];
