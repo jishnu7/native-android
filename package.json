@@ -9,8 +9,7 @@
     "fs-extra": "^0.23.1"
   },
   "scripts": {
-    "preinstall": "sh ./preinstall.sh",
-    "postinstall": "node checkSymlinks && (make setup && make clean || true)"
+    "preinstall": "sh ./preinstall.sh"
   },
   "private": true,
   "repository": {

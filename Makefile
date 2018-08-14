@@ -38,6 +38,3 @@ release: all
 
 analyze:
 	./scripts/analyze.sh
-
-setup:
-	node checkSymlinks
