@@ -17,6 +17,7 @@ exports.check = function (cb) {
 	
 	// Linking to newly created project, the name should be changed
 	links[0][1] = links[0][1].replace('AndroidSeed', process.argv[2]);
+	links[0][1] = links[0][1].replace('scheme', process.argv[3]);
 	
 	var i = 0;
 	var nextLink = function () {

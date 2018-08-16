@@ -47,16 +47,17 @@ old="$(echo "$old" | sed -E 's/\/$//')"
 new="$(echo "$new" | sed -E 's/\/$//')"
 new_lower="$(echo "$new" | tr 'A-Z' 'a-z')"
 old_lower="$(echo "$old" | tr 'A-Z' 'a-z')"
-cd "../../../../../build/""$new"
+scheme="$1"
+cd "../../../../../build/""$scheme""/native-android/""$new"
 echo "pwd "$PWD
 
 #Changing packages
 package_old="com.$old_lower"
-package_new="$1"
+package_new="$2"
 
 #Changing names
 #Mac
-if [ $(../../modules/devkit-core/modules/native-android/gradleops/ostype.sh) == "osx" ]; then
+if [ $(../../../../modules/devkit-core/modules/native-android/gradleops/ostype.sh) == "osx" ]; then
 	find . -type f -print0 | xargs -0 sed -i "" "s/${package_old}/${package_new}/g"
 	find . -type f -print0 | xargs -0 sed -i "" "s/${old}/${new}/g"
 	find . -type f -print0 | xargs -0 sed -i "" "s/${old_lower}/${new_lower}/g"
@@ -69,4 +70,3 @@ fi
 pwd
 cd app/src/main/java/com
 mv "$old_lower" "$new_lower"
-

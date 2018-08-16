@@ -557,11 +557,11 @@ var installModuleCode = function (api, app, opts) {
       var basename = path.basename(filePath);
       return Promise.all([
         // remove armeabi because armeabi-v7a is enough
-        fs.copyAsync(src, path.join(outputPath, "tealeaf/src/main", 'libs', 'armeabi', basename)),
-        fs.copyAsync(src, path.join(outputPath, "tealeaf/src/main", 'libs', 'armeabi-v7a', basename))
+        fs.copyAsync(src, path.join(projectPath, "tealeaf/src/main", 'libs', 'armeabi', basename)),
+        fs.copyAsync(src, path.join(projectPath, "tealeaf/src/main", 'libs', 'armeabi-v7a', basename))
       ]);
     } else {
-      return fs.copyAsync(path.join(baseDir, filePath), path.join(outputPath, "tealeaf/src/main", filePath));
+      return fs.copyAsync(path.join(baseDir, filePath), path.join(projectPath, "tealeaf/src/main", filePath));
     }
   }
 
@@ -768,7 +768,7 @@ function executeOnCreate(api, app, config, opts) {
 var projectPath = '';
 var manifestXml = '';
 function makeAndroidProject(api, app, config, opts) {
-  projectPath = path.resolve(__dirname+"/../../../../build/"+app.manifest.shortName);
+  projectPath = path.join(opts.outputPath, app.manifest.shortName); //path.resolve(__dirname+"/../../../../build/"+app.manifest.shortName);
   manifestXml = path.join(projectPath ,"/app/src/main",  'AndroidManifest.xml');
   var projectPropertiesFile = path.join(projectPath, 'project.properties');
   return fs.unlinkAsync(projectPropertiesFile)
@@ -792,6 +792,7 @@ function makeAndroidProject(api, app, config, opts) {
           app.manifest.shortName,
           // template name and location
           "AndroidSeed",
+          config.scheme,
           // new package
           config.packageName
         ], {cwd: './modules/devkit-core/modules/native-android/gradleops/'})
