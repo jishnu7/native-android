@@ -839,30 +839,29 @@ function makeAndroidProject(api, app, config, opts) {
 }
 
 function signAPK(api, app, shortName, outputPath, debug, config) {
-  var signArgsDebug, alignArgsDebug, signArgsRelease;
+  var signArgsDebug, alignArgsDebug;
   var binDir = path.join(outputPath, "bin");
+  var scheme = (config.debug ? "debug" : "release");
+  var apkDir = path.join(outputPath, shortName + "/app/build/outputs/apk/" + scheme + "/");
+  var keystore = process.env['DEVKIT_ANDROID_KEYSTORE'];
+  var storepass = process.env['DEVKIT_ANDROID_STOREPASS'];
+  var keypass = process.env['DEVKIT_ANDROID_KEYPASS'];
+  var key = process.env['DEVKIT_ANDROID_KEY'];
+  var buildToolsPath = process.env.ANDROID_HOME + '/build-tools/' + app.manifest.android.buildToolsVersion;
+  var apk = scheme === "debug"? "app-" + scheme + ".apk": "app-" + scheme + "-aligned.apk";
+  var signArgsRelease = [
+    "sign", "--ks", keystore, "--ks-pass", "pass:" + storepass, "--key-pass", "pass:" + keypass,
+    "--ks-key-alias", key, "--v1-signing-enabled", "true", "--v2-signing-enabled", "false", "--verbose",
+    apk
+  ];
 
   logger.log('Signing APK at', binDir);
   if (debug) {
-
-
-
-    var keystore = process.env['DEVKIT_ANDROID_KEYSTORE'];
-    var storepass = process.env['DEVKIT_ANDROID_STOREPASS'];
-    var keypass = process.env['DEVKIT_ANDROID_KEYPASS'];
-    var key = process.env['DEVKIT_ANDROID_KEY'];
-
     // sign debug apk with  Android chosen keys, e.g. release key to debug plugins, i.e debuggable release on output
-    if(keystore || storepass || keypass || key){
+    if(keystore || storepass || keypass || key) {
       logger.log('Data != null');
-      signArgsRelease = [
-        "sign", "--ks", keystore, "--ks-pass", "pass:"+storepass, "--key-pass", "pass:"+keypass,
-        "--ks-key-alias", key, "--v1-signing-enabled", "true", "--v2-signing-enabled", "false", "--verbose",
-        "app-debug.apk"
-      ];
 
-      var apkDirDebug = path.join(outputPath, "../../"+shortName+"/app/build/outputs/apk/debug/");
-      return spawnWithLogger(api, process.env.ANDROID_HOME + '/build-tools/'+app.manifest.android.buildToolsVersion+'/apksigner', signArgsRelease, {cwd: apkDirDebug})
+      return spawnWithLogger(api, buildToolsPath + '/apksigner', signArgsRelease, {cwd: apkDir})
     }
     else {  // sign debug apk with default Android debug keys
       var keyPath = path.join(process.env['HOME'], '.android', 'debug.keystore');
@@ -877,41 +876,25 @@ function signAPK(api, app, shortName, outputPath, debug, config) {
         "-f", "-v", "4", "app-debug.apk", "app-debug-aligned.apk"
       ];
 
-      var apkDirDebug = path.join(outputPath, "../../" + shortName + "/app/build/outputs/apk/debug/");
-      return spawnWithLogger(api, process.env.ANDROID_HOME + '/build-tools/'+app.manifest.android.buildToolsVersion+'/zipalign', alignArgsDebug, {cwd: apkDirDebug})
+      return spawnWithLogger(api, buildToolsPath + '/zipalign', alignArgsDebug, {cwd: apkDir})
         .then(function () {
-          spawnWithLogger(api, process.env.ANDROID_HOME + '/build-tools/'+app.manifest.android.buildToolsVersion+'/apksigner', signArgsDebug, {cwd: apkDirDebug})
+          spawnWithLogger(api, buildToolsPath + '/apksigner', signArgsDebug, {cwd: apkDir})
         })
     }
 
   } else {
-    var keystore = process.env['DEVKIT_ANDROID_KEYSTORE'];
     if (!keystore) { throw new BuildError('missing environment variable DEVKIT_ANDROID_KEYSTORE'); }
-
-    var storepass = process.env['DEVKIT_ANDROID_STOREPASS'];
     if (!storepass) { throw new BuildError('missing environment variable DEVKIT_ANDROID_STOREPASS'); }
-
-    var keypass = process.env['DEVKIT_ANDROID_KEYPASS'];
     if (!keypass) { throw new BuildError('missing environment variable DEVKIT_ANDROID_KEYPASS'); }
-
-    var key = process.env['DEVKIT_ANDROID_KEY'];
     if (!key) { throw new BuildError('missing environment variable DEVKIT_ANDROID_KEY'); }
-
-    signArgs = [
-      "sign", "--ks", keystore, "--ks-pass", "pass:"+storepass, "--key-pass", "pass:"+keypass,
-      "--ks-key-alias", key, "--v1-signing-enabled", "true", "--v2-signing-enabled", "false", "--verbose",
-      "app-release-aligned.apk" //shortName + "app-release-unsigned.apk", key
-    ];
 
     alignArgs = [
       "-f", "-v", "4", "app-release-unsigned.apk", "app-release-aligned.apk" //shortName + "-unaligned.apk", shortName + "-aligned.apk"
     ];
 
-    var scheme = (config.debug ? "debug" : "release");
-    var apkDir = path.join(outputPath, "../../"+shortName+"/app/build/outputs/apk/"+scheme+"/");
-    return spawnWithLogger(api, process.env.ANDROID_HOME +'/build-tools/'+app.manifest.android.buildToolsVersion+'/zipalign', alignArgs , {cwd: apkDir})
+    return spawnWithLogger(api, buildToolsPath + '/zipalign', alignArgs , {cwd: apkDir})
       .then(function () {
-        spawnWithLogger(api, process.env.ANDROID_HOME +'/build-tools/'+app.manifest.android.buildToolsVersion+'/apksigner', signArgs, {cwd: apkDir})
+        spawnWithLogger(api, buildToolsPath + '/apksigner', signArgsRelease, {cwd: apkDir})
       });
   }
 
