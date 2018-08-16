@@ -768,7 +768,7 @@ function executeOnCreate(api, app, config, opts) {
 var projectPath = '';
 var manifestXml = '';
 function makeAndroidProject(api, app, config, opts) {
-  projectPath = path.join(opts.outputPath, app.manifest.shortName); //path.resolve(__dirname+"/../../../../build/"+app.manifest.shortName);
+  projectPath = path.join(opts.outputPath, app.manifest.shortName);
   manifestXml = path.join(projectPath ,"/app/src/main",  'AndroidManifest.xml');
   var projectPropertiesFile = path.join(projectPath, 'project.properties');
   return fs.unlinkAsync(projectPropertiesFile)
