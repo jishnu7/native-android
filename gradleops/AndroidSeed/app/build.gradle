@@ -9,7 +9,7 @@ android {
     
     defaultConfig {
         applicationId "com.androidseed"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 27
         multiDexEnabled true
         versionCode 1

@@ -8,7 +8,7 @@ android {
     buildToolsVersion 'BuildToolVersionlaceholder'
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 27
         multiDexEnabled true
         ndk {
