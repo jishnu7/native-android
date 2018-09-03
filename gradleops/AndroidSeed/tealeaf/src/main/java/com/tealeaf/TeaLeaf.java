@@ -108,7 +108,7 @@ public class TeaLeaf extends FragmentActivity {
 	private Settings settings;
 	private IMenuButtonHandler menuButtonHandler;
 
-	private BroadcastReceiver screenOffReceiver;
+	private BroadcastReceiver screenOffReceiver = null;
 
 	private ILogger remoteLogger;
 
