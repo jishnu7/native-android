@@ -23,7 +23,12 @@
 #-dontoptimize
 -dontnote **
 -dontwarn **
-
+-keep public class android.support.v7.widget.** { *; }
+-keep public class com.tealeaf.** { *; }
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 
 #<!--START_PLUGINS_PROGUARD-->
 #<!--END_PLUGINS_PROGUARD-->
