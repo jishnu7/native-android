@@ -25,8 +25,9 @@ android {
      }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles 'proguard-rules.pro'
             manifestPlaceholders = [appName: "GameNamePlaceholderRelease"]
            
         }
