@@ -195,6 +195,7 @@ function injectPluginXML(opts) {
   var gradleAppBuildFile =  path.join(projectPath, "app", 'build.gradle');
   var gradleClasspathMainBuildFile =  path.join(projectPath, 'build.gradle');
   var gradleProguardTealeafFile =  path.join(projectPath, 'tealeaf', 'proguard-rules.pro');
+  var gradleProguardAppFile =  path.join(projectPath, 'app', 'proguard-rules.pro');
   var stylesFile =  path.join(projectPath, 'tealeaf/src/main/res/values/styles.xml');
 
 
@@ -247,6 +248,17 @@ function injectPluginXML(opts) {
 
     if (proguardXML) {
       var filepath = path.join(moduleConfig[moduleName].path, 'android', proguardXML);
+      logger.log('Reading Main Gradle XML:', filepath);
+
+      return fs.readFileAsync(filepath, 'utf-8');
+    }
+  });
+
+  var readProguardAppXMLFiles = Object.keys(moduleConfig).map(function (moduleName) {
+    var proguardXMLApp = moduleConfig[moduleName].config.proguardXMLApp;
+
+    if (proguardXMLApp) {
+      var filepath = path.join(moduleConfig[moduleName].path, 'android', proguardXMLApp);
       logger.log('Reading Main Gradle XML:', filepath);
 
       return fs.readFileAsync(filepath, 'utf-8');
@@ -483,7 +495,7 @@ function injectPluginXML(opts) {
           }
         })
     })
-    // read and apply plugins proguard settings
+    // read and apply plugins proguard settings for tealeaf
     .then(function () {
 
       return Promise.all([
@@ -509,6 +521,40 @@ function injectPluginXML(opts) {
             xml = replaceTextBetween(xml, XML_START_PLUGINS_PROGUARD, XML_END_PLUGINS_PROGUARD , mainGradleBuildStr);
 
             return fs.writeFileAsync(gradleProguardTealeafFile, xml, 'utf-8');
+          } else {
+            logger.log('No plugin gradle dependency to inject');
+          }
+        })
+        .then (function () {
+          return installJarsDependencies()
+        })
+    })
+    // read and apply plugins proguard settings for app
+    .then(function () {
+
+      return Promise.all([
+        fs.readFileAsync(gradleProguardAppFile, 'utf-8')]
+        .concat(readProguardAppXMLFiles)
+      )
+
+        .then(function (results) {
+          var xml = results.shift();
+          if (results && results.length > 0 && xml && xml.length > 0) {
+            var mainGradleBuildStr = '';
+
+            var XML_START_PLUGINS_PROGUARD =  '#<!--START_PLUGINS_PROGUARD-->';
+            var XML_END_PLUGINS_PROGUARD = '#<!--END_PLUGINS_PROGUARD-->';
+
+            for (var i = 0; i < results.length; ++i) {
+              var gradleXml = results[i];
+              if (!gradleXml) { continue; }
+
+              mainGradleBuildStr += getTextBetween(gradleXml, XML_START_PLUGINS_PROGUARD, XML_END_PLUGINS_PROGUARD );
+            }
+
+            xml = replaceTextBetween(xml, XML_START_PLUGINS_PROGUARD, XML_END_PLUGINS_PROGUARD , mainGradleBuildStr);
+
+            return fs.writeFileAsync(gradleProguardAppFile, xml, 'utf-8');
           } else {
             logger.log('No plugin gradle dependency to inject');
           }
