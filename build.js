@@ -196,6 +196,7 @@ function injectPluginXML(opts) {
   var gradleClasspathMainBuildFile =  path.join(projectPath, 'build.gradle');
   var gradleProguardTealeafFile =  path.join(projectPath, 'tealeaf', 'proguard-rules.pro');
   var gradleProguardAppFile =  path.join(projectPath, 'app', 'proguard-rules.pro');
+  var networkSecurityConfig = path.join(projectPath, 'tealeaf/src/main/res/xml/network_security_config.xml');
   var stylesFile =  path.join(projectPath, 'tealeaf/src/main/res/values/styles.xml');
 
 
@@ -259,6 +260,17 @@ function injectPluginXML(opts) {
 
     if (proguardXMLApp) {
       var filepath = path.join(moduleConfig[moduleName].path, 'android', proguardXMLApp);
+      logger.log('Reading Main Gradle XML:', filepath);
+
+      return fs.readFileAsync(filepath, 'utf-8');
+    }
+  });
+
+  var readNetworkSecurityConfig = Object.keys(moduleConfig).map(function (moduleName) {
+    var networkSecurityConfig = moduleConfig[moduleName].config.networkSecurityConfig;
+
+    if (networkSecurityConfig) {
+      var filepath = path.join(moduleConfig[moduleName].path, 'android', networkSecurityConfig);
       logger.log('Reading Main Gradle XML:', filepath);
 
       return fs.readFileAsync(filepath, 'utf-8');
@@ -555,6 +567,38 @@ function injectPluginXML(opts) {
             xml = replaceTextBetween(xml, XML_START_PLUGINS_PROGUARD, XML_END_PLUGINS_PROGUARD , mainGradleBuildStr);
 
             return fs.writeFileAsync(gradleProguardAppFile, xml, 'utf-8');
+          } else {
+            logger.log('No plugin gradle dependency to inject');
+          }
+        })
+        .then (function () {
+          return installJarsDependencies()
+        })
+    })
+    // read and apply network security config
+    .then(function () {
+      return Promise.all([
+        fs.readFileAsync(networkSecurityConfig, 'utf-8')]
+        .concat(readNetworkSecurityConfig)
+      )
+        .then(function (results) {
+          var xml = results.shift();
+          if (results && results.length > 0 && xml && xml.length > 0) {
+            var mainNetworkSecurityConfig = '';
+
+            var XML_START_PLUGINS_NETWORK_SECURITY_CONFIG =  '//<!--START_PLUGINS_NETWORK_SECURITY-->';
+            var XML_END_PLUGINS_NETWORK_SECURITY_CONFIG = '//<!--END_PLUGINS_NETWORK_SECURITY-->';
+
+            for (var i = 0; i < results.length; ++i) {
+              var networkSecurityXml = results[i];
+              if (!networkSecurityXml) { continue; }
+
+              mainNetworkSecurityConfig += getTextBetween(networkSecurityXml, XML_START_PLUGINS_NETWORK_SECURITY_CONFIG, XML_END_PLUGINS_NETWORK_SECURITY_CONFIG);
+            }
+
+            xml = replaceTextBetween(xml, XML_START_PLUGINS_NETWORK_SECURITY_CONFIG, XML_END_PLUGINS_NETWORK_SECURITY_CONFIG , mainNetworkSecurityConfig);
+
+            return fs.writeFileAsync(networkSecurityConfig, xml, 'utf-8');
           } else {
             logger.log('No plugin gradle dependency to inject');
           }
