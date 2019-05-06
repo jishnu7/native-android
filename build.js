@@ -581,31 +581,31 @@ function injectPluginXML(opts) {
         fs.readFileAsync(networkSecurityConfig, 'utf-8')]
         .concat(readNetworkSecurityConfig)
       )
-        .then(function (results) {
-          var xml = results.shift();
-          if (results && results.length > 0 && xml && xml.length > 0) {
-            var mainNetworkSecurityConfig = '';
+      .then(function (results) {
+        var xml = results.shift();
+        if (results && results.length > 0 && xml && xml.length > 0) {
+          var mainNetworkSecurityConfig = '';
 
-            var XML_START_PLUGINS_NETWORK_SECURITY_CONFIG =  '//<!--START_PLUGINS_NETWORK_SECURITY-->';
-            var XML_END_PLUGINS_NETWORK_SECURITY_CONFIG = '//<!--END_PLUGINS_NETWORK_SECURITY-->';
+          var XML_START_PLUGINS_NETWORK_SECURITY_CONFIG =  '//<!--START_PLUGINS_NETWORK_SECURITY-->';
+          var XML_END_PLUGINS_NETWORK_SECURITY_CONFIG = '//<!--END_PLUGINS_NETWORK_SECURITY-->';
 
-            for (var i = 0; i < results.length; ++i) {
-              var networkSecurityXml = results[i];
-              if (!networkSecurityXml) { continue; }
+          for (var i = 0; i < results.length; ++i) {
+            var networkSecurityXml = results[i];
+            if (!networkSecurityXml) { continue; }
 
-              mainNetworkSecurityConfig += getTextBetween(networkSecurityXml, XML_START_PLUGINS_NETWORK_SECURITY_CONFIG, XML_END_PLUGINS_NETWORK_SECURITY_CONFIG);
-            }
-
-            xml = replaceTextBetween(xml, XML_START_PLUGINS_NETWORK_SECURITY_CONFIG, XML_END_PLUGINS_NETWORK_SECURITY_CONFIG , mainNetworkSecurityConfig);
-
-            return fs.writeFileAsync(networkSecurityConfig, xml, 'utf-8');
-          } else {
-            logger.log('No plugin gradle dependency to inject');
+            mainNetworkSecurityConfig += getTextBetween(networkSecurityXml, XML_START_PLUGINS_NETWORK_SECURITY_CONFIG, XML_END_PLUGINS_NETWORK_SECURITY_CONFIG);
           }
-        })
-        .then (function () {
-          return installJarsDependencies()
-        })
+
+          xml = replaceTextBetween(xml, XML_START_PLUGINS_NETWORK_SECURITY_CONFIG, XML_END_PLUGINS_NETWORK_SECURITY_CONFIG , mainNetworkSecurityConfig);
+
+          return fs.writeFileAsync(networkSecurityConfig, xml, 'utf-8');
+        } else {
+          logger.log('No plugin gradle dependency to inject');
+        }
+      })
+      .then (function () {
+        return installJarsDependencies()
+      })
     });
 }
 
