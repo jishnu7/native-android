@@ -1228,7 +1228,7 @@ function updateManifest(api, app, config, opts) {
     sdkHash: config.sdkVersion,
     androidHash: androidVersion,
     minSdkVersion: config.argv['min-sdk-version'] || 19,
-    targetSdkVersion: config.argv['target-sdk-version'] || 27,
+    targetSdkVersion: config.argv['target-sdk-version'] || 28,
     debuggable: config.debug ? 'true' : 'false',
     otherApps: otherApps.join('|')
   });

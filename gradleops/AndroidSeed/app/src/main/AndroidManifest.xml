@@ -86,6 +86,7 @@
 				<data android:scheme="package"/>
 			</intent-filter>
 		</receiver>
+	<uses-library android:name="org.apache.http.legacy" android:required="false" />
 		
     <!--START_PLUGINS_APPLICATION-->
     <!--END_PLUGINS_APPLICATION-->
