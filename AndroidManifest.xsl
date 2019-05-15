@@ -7,7 +7,7 @@
 	<xsl:param name="versionCode">23</xsl:param>
 
 	<xsl:param name="minSdkVersion">21</xsl:param>
-	<xsl:param name="targetSdkVersion">27</xsl:param>
+	<xsl:param name="targetSdkVersion">28</xsl:param>
 
 	<xsl:param name="gameHash">0.0</xsl:param>
 	<xsl:param name="sdkHash">1.0</xsl:param>
